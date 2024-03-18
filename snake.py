@@ -18,7 +18,6 @@ pygame.display.set_caption('Snake game by Dana')
 clock = pygame.time.Clock()
 
 snake_block=10
-snake_speed=30
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
 
@@ -48,6 +47,7 @@ def gameLoop():
     
     snake_List = []
     Length_of_snake = 1
+    snake_speed=15
     
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
@@ -119,6 +119,7 @@ def gameLoop():
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
             Length_of_snake += 1
+            snake_speed += 2
             
         # control how fast the game loop runs, effectively controlling the game's frame rate
         clock.tick(snake_speed)
