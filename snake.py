@@ -3,11 +3,11 @@ import time
 import random
 
 pygame.init()
-beige = (248, 250, 229)
-dark_brown = (118, 69, 59)
-light_brown = (177, 148, 112)
-blue = (50, 153, 213)
+beige = (235, 228, 209)
 forest_green = (67, 118, 108)
+dark_blue = (38, 87, 124)
+blue = (50, 153, 213)
+orange = (229, 86, 4)
 
 dis_width = 800
 dis_height  = 600
@@ -43,22 +43,22 @@ def load_high_scores():
 def display_high_scores(high_scores):
     start_y = dis_height - 200  # Starting y position to display scores
     # title
-    score_title_surf = highest_score_font.render("Highest scores", True, dark_brown)
+    score_title_surf = highest_score_font.render("Highest scores", True, forest_green)
     dis.blit(score_title_surf, [dis_width - 150, start_y])
     start_y += 30
     for index, (name, score) in enumerate(high_scores, start=1):
         score_text = f"{index}. {name} - {score}"
-        score_surf = highest_score_font.render(score_text, True, dark_brown)
+        score_surf = highest_score_font.render(score_text, True, forest_green)
         dis.blit(score_surf, [dis_width - 150, start_y])
         start_y += 30  # Move down for the next score
 
 def your_score(score):
-    value = score_font.render("Your Score: " + str(score), True, dark_brown)
+    value = score_font.render("Your Score: " + str(score), True, forest_green)
     dis.blit(value, [0, 0])
 
 def our_snake(snake_block, snake_list):
     for x in snake_list:
-        pygame.draw.rect(dis, light_brown, [x[0], x[1], snake_block, snake_block])
+        pygame.draw.rect(dis, dark_blue, [x[0], x[1], snake_block, snake_block])
         
 # show the info on the screen
 def message(msg,color):
@@ -172,7 +172,7 @@ def gameLoop():
         x1 += x1_change
         y1 += y1_change
         dis.fill(beige)
-        pygame.draw.rect(dis, forest_green, [foodx, foody, snake_block, snake_block])
+        pygame.draw.rect(dis, orange, [foodx, foody, snake_block, snake_block])
         snake_Head = []
         snake_Head.append(x1)
         snake_Head.append(y1)
