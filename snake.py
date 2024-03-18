@@ -3,12 +3,11 @@ import time
 import random
 
 pygame.init()
-white = (255, 255, 255)
-yellow = (255, 255, 102)
-black = (0, 0, 0)
-red = (213, 50, 80)
-green = (0, 255, 0)
+beige = (248, 250, 229)
+dark_brown = (118, 69, 59)
+light_brown = (177, 148, 112)
 blue = (50, 153, 213)
+forest_green = (67, 118, 108)
 
 dis_width = 800
 dis_height  = 600
@@ -20,23 +19,95 @@ clock = pygame.time.Clock()
 snake_block=10
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
+highest_score_font = pygame.font.SysFont("comicsansms", 20)
+
+def save_high_score(name, score):
+    high_scores = load_high_scores()
+    high_scores.append((name, score))
+    high_scores = sorted(high_scores, key=lambda x: x[1], reverse=True)[:5]  # Keep top 5 scores
+
+    with open("high_scores.txt", "w") as file:
+        for entry in high_scores:
+            file.write(f"{entry[0]},{entry[1]}\n")
+
+def load_high_scores():
+    try:
+        with open("high_scores.txt", "r") as file:
+            lines = file.readlines()
+        high_scores = [tuple(line.strip().split(",")) for line in lines]
+        high_scores = [(entry[0], int(entry[1])) for entry in high_scores]  # Convert score to int
+    except FileNotFoundError:
+        high_scores = []
+    return high_scores
+
+def display_high_scores(high_scores):
+    start_y = dis_height - 200  # Starting y position to display scores
+    # title
+    score_title_surf = highest_score_font.render("Highest scores", True, dark_brown)
+    dis.blit(score_title_surf, [dis_width - 150, start_y])
+    start_y += 30
+    for index, (name, score) in enumerate(high_scores, start=1):
+        score_text = f"{index}. {name} - {score}"
+        score_surf = highest_score_font.render(score_text, True, dark_brown)
+        dis.blit(score_surf, [dis_width - 150, start_y])
+        start_y += 30  # Move down for the next score
 
 def your_score(score):
-    value = score_font.render("Your Score: " + str(score), True, yellow)
+    value = score_font.render("Your Score: " + str(score), True, dark_brown)
     dis.blit(value, [0, 0])
 
 def our_snake(snake_block, snake_list):
     for x in snake_list:
-        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
+        pygame.draw.rect(dis, light_brown, [x[0], x[1], snake_block, snake_block])
         
 # show the info on the screen
 def message(msg,color):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width/6, dis_height/3])
+    
+def prompt_for_name():
+    input_active = True
+    input_text = ''
+    input_box = pygame.Rect(dis_width / 2 - 100, dis_height / 2 - 25, 200, 50)
+    prompt_text = "Enter Your Name:"
+    prompt_surf = font_style.render(prompt_text, True, pygame.Color('white'))
+
+    while input_active:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    input_active = False
+                elif event.key == pygame.K_BACKSPACE:
+                    input_text = input_text[:-1]
+                else:
+                    input_text += event.unicode
+
+        # Clear screen
+        dis.fill((30, 30, 30))
+        
+        # Render prompt and input box
+        dis.blit(prompt_surf, (dis_width / 2 - prompt_surf.get_width() / 2, dis_height / 2 - 50))
+        pygame.draw.rect(dis, pygame.Color('white'), input_box, 2)
+        
+        # Render entered text
+        text_surf = font_style.render(input_text, True, pygame.Color('white'))
+        dis.blit(text_surf, (input_box.x + 5, input_box.y + 5))
+        
+        pygame.display.flip()
+        clock.tick(30)
+
+    return input_text
+
+
 
 def gameLoop():
+    high_scores = load_high_scores()
     game_over = False
     game_close = False
+    game_save = False
     # up: 0, down:1, left:2, right:3
     dir = -1
     x1 = dis_width/2
@@ -54,8 +125,12 @@ def gameLoop():
                     
     while not game_over:
         while game_close == True:
-            dis.fill(white)
-            message("You Lost! Press Q-Quit or C-Play Again", red)
+            if game_save == False:
+                player_name = prompt_for_name()
+                save_high_score(player_name, Length_of_snake - 1)
+                game_save = True
+            dis.fill(beige)
+            message("You Lost! Press Q-Quit or C-Play Again", blue)
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -96,8 +171,8 @@ def gameLoop():
     
         x1 += x1_change
         y1 += y1_change
-        dis.fill(blue)
-        pygame.draw.rect(dis, green, [foodx, foody, snake_block, snake_block])
+        dis.fill(beige)
+        pygame.draw.rect(dis, forest_green, [foodx, foody, snake_block, snake_block])
         snake_Head = []
         snake_Head.append(x1)
         snake_Head.append(y1)
@@ -112,6 +187,7 @@ def gameLoop():
  
         our_snake(snake_block, snake_List)
         your_score(Length_of_snake - 1)
+        display_high_scores(high_scores)
         pygame.display.update()
         
         # when the snake crosses over that food, creat a new fruit
@@ -126,5 +202,5 @@ def gameLoop():
 
     pygame.quit()
     quit()
-
+    
 gameLoop()
