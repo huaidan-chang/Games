@@ -38,7 +38,8 @@ def message(msg,color):
 def gameLoop():
     game_over = False
     game_close = False
-    
+    # up: 0, down:1, left:2, right:3
+    dir = -1
     x1 = dis_width/2
     y1 = dis_height/2
     # hold the updating values of the x and y coordinates.
@@ -58,6 +59,9 @@ def gameLoop():
             pygame.display.update()
 
             for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    game_over = True
+                    game_close = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
                         game_over = True
@@ -68,19 +72,24 @@ def gameLoop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
+            # up: 0, down:1, left:2, right:3
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT and dir != 3:
                     x1_change = -snake_block
                     y1_change = 0
-                elif event.key == pygame.K_RIGHT:
+                    dir = 2
+                elif event.key == pygame.K_RIGHT and dir != 2:
                     x1_change = snake_block
                     y1_change = 0
-                elif event.key == pygame.K_UP:
+                    dir = 3
+                elif event.key == pygame.K_UP and dir != 1:
                     y1_change = -snake_block
                     x1_change = 0
-                elif event.key == pygame.K_DOWN:
+                    dir = 0
+                elif event.key == pygame.K_DOWN and dir != 0:
                     y1_change = snake_block
                     x1_change = 0
+                    dir = 1
         # hits the boundaries of the screen, then he loses 
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
             game_close = True
